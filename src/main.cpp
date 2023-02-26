@@ -1,10 +1,8 @@
 #include <Arduino.h>
 
-void setup() {
-  // put your setup code here, to run once:
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SH110X.h>
 
-}
 
-void loop() {
-  // put your main code here, to run repeatedly:
-}
