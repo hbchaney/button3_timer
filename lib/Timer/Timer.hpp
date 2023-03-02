@@ -1,43 +1,82 @@
 #pragma once 
-
+#include "Input.hpp"
+#include <Arduino.h>
+#include <EEPROM.h>
 
 class Timer 
 { 
 
     private: 
 
-    int current_minutes; 
-    int current_seconds;
-    int timer_minutes; 
-    int timer_seconds;  
-    bool start = false; 
+    int timer_no; //dictates where data will be stored in flash for the times 
 
-    unsigned long pause_time;
-    unsigned long start_time; 
-    unsigned long start_time; 
+    short current_minutes; 
+    short current_seconds;
+    short timer_minutes; 
+    short timer_seconds;  
+    bool set_mode = true;
+
+    Input input_cache[2] {none,none}; 
+
+    enum state { 
+        stopped, 
+        started,
+        reset,
+        time_set,
+    }; 
+
+    state current_state = stopped; 
+
+    enum setting { 
+        seconds, 
+        minutes, 
+    };
+
+    setting current_setting = seconds; 
+
+    short max_minutes = 60;
+    short max_seconds = 60; 
+
+    unsigned long pause_cache = 0; 
+    unsigned long pause_time = 0;
+    unsigned long start_time = 0; 
 
     //private functions
     void start(); 
     void stop(); 
+    void save(); 
+    
+    void Toggle_start_stop(); 
+
+    void update_current_time(); 
+
+    void stopped_input(); 
+    void started_input();
+    void reset_input(); 
+    void time_set_input(); 
 
     public: 
-    Timer(); 
+    /// @brief Initializes Timer Object
+    Timer(int no); 
     ~Timer(); 
 
-    //public functions 
-    //basic utilities
 
-    void Toggle_start_stop(); 
-    void restart(); 
-    void save(); 
-
-    //time setting functions
-
-    void increase(); 
-    void decrease(); 
-
-    int get_minutes(); 
+    /// @brief toggles between the stop and start state also starts after setting the time 
     
 
+    /// @brief  restarts the time
+    void restart(); 
+
+    //input processing params 
+
+    void update_cache(Input); 
+    void check_input(); 
+    
+
+    // display grabbing info 
+    int get_minutes(); 
+    int get_seconds(); 
+    
+    void update(); 
 
 };
