@@ -1,5 +1,5 @@
 #pragma once 
-#include "Input.hpp"
+#include "Input.h"
 #include <Arduino.h>
 #include <EEPROM.h>
 
@@ -25,7 +25,7 @@ class Timer
         time_set,
     }; 
 
-    state current_state = stopped; 
+    state current_state = reset; 
 
     enum setting { 
         seconds, 
@@ -74,8 +74,8 @@ class Timer
     
 
     // display grabbing info 
-    int get_minutes(); 
-    int get_seconds(); 
+    int get_minutes() const; 
+    int get_seconds() const; 
     
     void update(); 
 

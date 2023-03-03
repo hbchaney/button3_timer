@@ -1,9 +1,11 @@
-#include  "Timer.hpp"
+#include "Timer.h"
 
 Timer::Timer(int no) : timer_no(no) 
 {
     timer_minutes = EEPROM.read(timer_no*2); 
     timer_seconds = EEPROM.read(timer_no*2 + 1); 
+    current_minutes = timer_minutes; 
+    current_seconds = timer_seconds; 
 } 
 
 Timer::~Timer() {} 
@@ -163,25 +165,46 @@ void Timer::reset_input()
 
 void Timer::time_set_input() 
 {
-    if (current_setting == seconds) 
+
+    
+
+    short& ad_no = current_seconds; 
+    short& max_val = max_seconds; 
+    if (current_setting == minutes)
     { 
-        short& ad_no = current_seconds; 
+        short& ad_no = current_minutes;
+        short& max_val = max_minutes;  
     }
-    else 
-    { 
-        short& ad_no = current_minutes; 
-    }
+
     
     switch (input_cache[0]) 
     { 
         case A: 
-            ad_no =  (ad_no < seconds_max) ? ad_no + 1 : 0; 
+            ad_no =  (ad_no < max_val) ? ad_no + 1 : 0; 
             break;
-        case A_long: 
-             
+        case A_long:
+            ad_no =  (ad_no + 10 < max_val) ? ad_no + 10 : 0; 
+             break; 
         case B: 
-            ad_no = 
-
-
+            ad_no = (ad_no > 0) ? ad_no - 1: max_val; 
+            break; 
+        case B_long: 
+            ad_no = (ad_no - 10 > 0) ? ad_no - 10 : max_val; 
+            break; 
+        case C_long:
+            //break out of the time set mode 
+            save(); 
+            restart(); 
+            break; 
     }
+}
+
+int Timer::get_minutes() const
+{
+     return current_minutes; 
+}
+
+int Timer::get_seconds() const
+{ 
+    return current_seconds; 
 }
