@@ -23,11 +23,19 @@ class Sequence
         current_position = 0; 
         ts_on = true; 
         interval_time = 0; 
-        
+        repeat_start_time = millis(); 
 
     }
 
+    bool Update() 
+    { 
+        
+    }
 
+    void Pulse() 
+    { 
+        pulse_on = true; 
+    }
     
     private: 
 
