@@ -14,6 +14,9 @@
 Display feather_display;
 std::string out_put {"60:23"};  
 Input answer = none; 
+Timer first_timer {0}; 
+
+std::string going_out; 
 
 ThreeButtonManager input_manager{9,8,7,650}; 
 
@@ -40,33 +43,16 @@ void loop()
 { 
 
     answer = input_manager.Update();
+    first_timer.update_cache(answer); 
+    first_timer.update(); 
 
-    //button a 
-    if (answer == A)
-    { 
-        current_time++; 
-    }
-    else if (answer == A_long) 
-    { 
-        current_time = current_time + 10;  
-    }
-
-    //button b 
-    if (answer == B)
-    {
-        current_time = (current_time > 0) ? current_time -1 : 0; 
-    }
-    if (answer == B_long) 
-    { 
-        current_time = (current_time -10 > 0) ? current_time - 10 : 0; 
-    }
-
-    if (answer == C_long) 
-    { 
-        current_time = 0; 
-    }
     feather_display.clearDisplay(); 
     feather_display.setCursor(0,0); 
-    feather_display.print(current_time); 
+    feather_display.print(first_timer.get_minutes()); 
+    feather_display.print(':'); 
+    feather_display.print(first_timer.get_seconds()); 
+
+    feather_display.println(); 
+    feather_display.println(); 
     feather_display.display(); 
 }

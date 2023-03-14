@@ -26,7 +26,7 @@ void Timer::start()
     if (current_state == stopped) 
     {
        //adding to the pause cache 
-        pause_cache = start_time - pause_time; 
+        pause_cache += start_time - pause_time; 
 
         //updating the state 
         current_state = started;   
@@ -40,7 +40,7 @@ void Timer::start()
 
 void Timer::update_current_time() 
 { 
-    unsigned long end_time = start_time + pause_cache + timer_minutes*60*1000 + timer_seconds*1000; //end time in millis 
+    unsigned long end_time = start_time - pause_cache + timer_minutes*60*1000 + timer_seconds*1000; //end time in millis 
     unsigned long difference = (end_time - millis())/1000; 
     current_minutes = difference/60; 
     current_seconds = difference - current_minutes*60; 
@@ -166,33 +166,42 @@ void Timer::reset_input()
 void Timer::time_set_input() 
 {
 
+    short* ad_no; 
+    short* max_val;     
+    if (current_setting == seconds) 
+    { 
+        short* ad_no = &current_seconds; 
+        short* max_val = &max_seconds; 
+    }
     
-
-    short& ad_no = current_seconds; 
-    short& max_val = max_seconds; 
     if (current_setting == minutes)
     { 
-        short& ad_no = current_minutes;
-        short& max_val = max_minutes;  
+        short* ad_no = &current_minutes;
+        short* max_val = &max_minutes;  
     }
 
     
     switch (input_cache[0]) 
     { 
         case A: 
-            ad_no =  (ad_no < max_val) ? ad_no + 1 : 0; 
+            *ad_no =  (*ad_no < *max_val) ? *ad_no + 1 : 0; 
             break;
         case A_long:
-            ad_no =  (ad_no + 10 < max_val) ? ad_no + 10 : 0; 
+            *ad_no =  (*ad_no + 10 < *max_val) ? *ad_no + 10 : 0; 
              break; 
         case B: 
-            ad_no = (ad_no > 0) ? ad_no - 1: max_val; 
+            *ad_no = (*ad_no > 0) ? *ad_no - 1: *max_val; 
             break; 
         case B_long: 
-            ad_no = (ad_no - 10 > 0) ? ad_no - 10 : max_val; 
+            *ad_no = (*ad_no - 10 > 0) ? *ad_no - 10 : *max_val; 
             break; 
         case C_long:
             //break out of the time set mode 
+            if (current_setting == seconds) 
+            { 
+                current_setting = minutes; 
+                break; 
+            }
             save(); 
             restart(); 
             break; 
@@ -207,4 +216,10 @@ int Timer::get_minutes() const
 int Timer::get_seconds() const
 { 
     return current_seconds; 
+}
+
+void Timer::manual_save(int _minutes, int _seconds)
+{ 
+    EEPROM.write(timer_no*2,_minutes);
+    EEPROM.write(timer_no*2 + 1,_seconds); 
 }

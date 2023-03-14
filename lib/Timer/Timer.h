@@ -54,6 +54,7 @@ class Timer
     void started_input();
     void reset_input(); 
     void time_set_input(); 
+    void check_input(); 
 
     public: 
     /// @brief Initializes Timer Object
@@ -68,14 +69,15 @@ class Timer
     void restart(); 
 
     //input processing params 
-
     void update_cache(Input); 
-    void check_input(); 
+    
     
 
     // display grabbing info 
     int get_minutes() const; 
     int get_seconds() const; 
+
+    void manual_save(int _minutes, int _seconds); 
     
     void update(); 
 
