@@ -3,6 +3,18 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
+enum state { 
+    stopped, 
+    started,
+    reset,
+    time_set,
+}; 
+
+enum setting { 
+        seconds, 
+        minutes, 
+    };
+
 class Timer 
 { 
 
@@ -18,28 +30,16 @@ class Timer
 
     Input input_cache[2] {none,none}; 
 
-    enum state { 
-        stopped, 
-        started,
-        reset,
-        time_set,
-    }; 
-
     state current_state = reset; 
-
-    enum setting { 
-        seconds, 
-        minutes, 
-    };
 
     setting current_setting = seconds; 
 
     short max_minutes = 60;
     short max_seconds = 60; 
 
-    unsigned long pause_cache = 0; 
     unsigned long pause_time = 0;
     unsigned long start_time = 0; 
+    unsigned long time_cache; 
 
     //private functions
     void start(); 
@@ -71,7 +71,8 @@ class Timer
     //input processing params 
     void update_cache(Input); 
     
-    
+    state get_state() const; 
+    setting get_setting() const;
 
     // display grabbing info 
     int get_minutes() const; 

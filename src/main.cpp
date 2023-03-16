@@ -21,6 +21,8 @@ std::string going_out;
 ThreeButtonManager input_manager{9,8,7,650}; 
 
 int current_time = 0; 
+state status; 
+
 
 
 void setup() 
@@ -51,8 +53,34 @@ void loop()
     feather_display.print(first_timer.get_minutes()); 
     feather_display.print(':'); 
     feather_display.print(first_timer.get_seconds()); 
+    feather_display.println(); 
 
-    feather_display.println(); 
-    feather_display.println(); 
+    status = first_timer.get_state(); 
+
+    switch (status)
+    {
+        case stopped: 
+            feather_display.println("stopped"); 
+            break; 
+        case started: 
+            feather_display.println("started"); 
+            break; 
+        case reset: 
+            feather_display.println("reset"); 
+            break; 
+        case time_set: 
+            feather_display.println("timeset"); 
+            if (first_timer.get_setting() == minutes)
+            { 
+                feather_display.print("M");
+            }
+            else 
+            { 
+                feather_display.print("S"); 
+            }
+            break; 
+    }
+    
+
     feather_display.display(); 
 }
