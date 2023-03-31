@@ -10,20 +10,13 @@
 #include "Display.h"
 #include "button.h"
 #include "three_button_manager.h"
+#include "TimerDisplay.hpp"
+#include "TimerManager.hpp"
 
 Display feather_display;
-std::string out_put {"60:23"};  
-Input answer = none; 
-Timer first_timer {0}; 
-
-std::string going_out; 
-
 ThreeButtonManager input_manager{9,8,7,650}; 
-
-int current_time = 0; 
-state status; 
-
-
+TimerManager time_manager{&feather_display}; 
+Input answer; 
 
 void setup() 
 { 
@@ -39,48 +32,45 @@ void setup()
     input_manager.Setup(); 
 
     feather_display.clearDisplay(); 
+
 }
 
 void loop() 
 { 
-
-    answer = input_manager.Update();
-    first_timer.update_cache(answer); 
-    first_timer.update(); 
-
     feather_display.clearDisplay(); 
-    feather_display.setCursor(0,0); 
-    feather_display.print(first_timer.get_minutes()); 
-    feather_display.print(':'); 
-    feather_display.print(first_timer.get_seconds()); 
-    feather_display.println(); 
+    answer = input_manager.Update(); 
+    time_manager.Update(answer); 
 
-    status = first_timer.get_state(); 
-
-    switch (status)
-    {
-        case stopped: 
-            feather_display.println("stopped"); 
-            break; 
-        case started: 
-            feather_display.println("started"); 
-            break; 
-        case reset: 
-            feather_display.println("reset"); 
-            break; 
-        case time_set: 
-            feather_display.println("timeset"); 
-            if (first_timer.get_setting() == minutes)
-            { 
-                feather_display.print("M");
-            }
-            else 
-            { 
-                feather_display.print("S"); 
-            }
-            break; 
+    if (answer == B_long)
+    { 
+        Serial.println("B_long pressed"); 
     }
-    
 
     feather_display.display(); 
 }
+
+// unsigned long last_pulse_on = 0;
+// unsigned long last_pulse_off = 0;  
+// unsigned long pulse_length = 200; 
+// unsigned long off_length = 500; 
+// bool on = false; 
+
+// //Buzzer quick test 
+// void setup() 
+// { 
+//     pinMode(0,OUTPUT);
+//     pinMode(6,OUTPUT); 
+//     digitalWrite(6,0); 
+//     digitalWrite(0,0); 
+// }
+
+// void loop() 
+// { 
+//     digitalWrite(0,HIGH); 
+//     sleep_ms(pulse_length); 
+//     digitalWrite(0,LOW); 
+//     sleep_ms(pulse_length);
+//     digitalWrite(0,HIGH); 
+     
+// }
+
