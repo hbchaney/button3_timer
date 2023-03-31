@@ -14,7 +14,7 @@ void Timer::stop()
 {
     // record the pause time 
     pause_time = millis(); 
-    current_state = stopped; 
+    current_state = STOPPED; 
     time_cache += pause_time - start_time; 
 }
 
@@ -23,20 +23,27 @@ void Timer::start()
 
     start_time = millis(); 
     //if starting from a stop 
-    if (current_state == stopped) 
+    if (current_state == STOPPED) 
     { 
         //updating the state 
-        current_state = started;   
+        current_state = STARTED;   
     }
     else //starting from reset
     { 
         //update the state 
-        current_state =  started; 
+        current_state =  STARTED; 
     }
 }
 
 void Timer::update_current_time() 
 { 
+    //check for finished
+    if (start_time < time_cache + timer_minutes*60*1000 + timer_seconds*1000)
+    { 
+        current_state = FINISHED; 
+        return; 
+    }
+
     unsigned long end_time = start_time - time_cache + timer_minutes*60*1000 + timer_seconds*1000; //end time in millis 
     unsigned long difference = (end_time - millis())/1000; 
     current_minutes = difference/60; 
@@ -45,7 +52,7 @@ void Timer::update_current_time()
 
 void Timer::Toggle_start_stop() 
 { 
-    if (current_state == started) 
+    if (current_state == STARTED) 
     { 
         stop();
     }
@@ -71,14 +78,14 @@ void Timer::restart()
     time_cache = 0; 
     current_minutes = timer_minutes; 
     current_seconds = timer_seconds; 
-    current_state = reset; 
-    current_setting = seconds; 
+    current_state = RESET; 
+    current_setting = SECONDS; 
 }
 
 void Timer::update() 
 {  
     check_input();
-    if (current_state == started) 
+    if (current_state == STARTED) 
     { 
         update_current_time();  
     }
@@ -99,20 +106,32 @@ void Timer::check_input()
     } 
     switch (current_state) 
     {
-    case stopped: 
+    case STOPPED: 
         stopped_input(); 
         break; 
-    case started: 
+    case STARTED: 
         started_input(); 
         break; 
-    case reset: 
+    case RESET: 
         reset_input(); 
         break;
-    case time_set: 
+    case TIME_SET: 
         time_set_input(); 
+        break; 
+    case FINISHED: 
+        finished_input(); 
         break; 
     }
 
+}
+
+void Timer::finished_input() 
+{ 
+    //if any input other than no input reset the timer 
+    if (input_cache[0] != none)
+    { 
+        restart(); 
+    }
 }
 
 void Timer::stopped_input() 
@@ -127,7 +146,7 @@ void Timer::stopped_input()
             break; 
         case C_long: 
             restart(); 
-            current_state = time_set; 
+            current_state = TIME_SET; 
             break; 
     }
 }
@@ -156,7 +175,7 @@ void Timer::reset_input()
             //does nothing for now 
             break; 
         case C_long: 
-            current_state = time_set; 
+            current_state = TIME_SET; 
             break; 
     }
 }
@@ -164,7 +183,7 @@ void Timer::reset_input()
 void Timer::time_set_input() 
 {
    
-    if (current_setting == seconds) 
+    if (current_setting == SECONDS) 
     { 
         short& ad_no = current_seconds; 
         short& max_val = max_seconds; 
@@ -186,7 +205,7 @@ void Timer::time_set_input()
                 break; 
             case C_long:
                 //break out of the time set
-                current_setting = minutes; 
+                current_setting = MINUTES; 
                 break; 
 
         }
@@ -194,7 +213,7 @@ void Timer::time_set_input()
         return; 
     }
 
-    if (current_setting == minutes) 
+    if (current_setting == MINUTES) 
     { 
         short& ad_no = current_minutes;
         short& max_val = max_minutes; 

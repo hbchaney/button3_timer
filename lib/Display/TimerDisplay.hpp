@@ -32,15 +32,24 @@ class TimerDisplay
 
     void Update() 
     { 
+        //set the cursor in the right location 
         display_pointer->setCursor(display_location._x, display_location._y); 
+        
+        //check if finished
+        if (timer_pointer->get_state() == state::FINISHED)
+        {
+            display_pointer->print("DONE!"); 
+            return; 
+        }
+        
         display_pointer->print(timer_pointer->get_minutes()); 
         display_pointer->print(':'); 
         display_pointer->print(timer_pointer->get_seconds()); 
         display_pointer->print("  "); 
-        if(timer_pointer->get_state() == time_set)
+        if(timer_pointer->get_state() == state::TIME_SET)
         { 
             display_pointer->str_print(output_map.at(timer_pointer->get_state())); 
-            if (timer_pointer->get_setting() == minutes)
+            if (timer_pointer->get_setting() == setting::MINUTES)
             { 
                 display_pointer->print("m"); 
             }
@@ -73,8 +82,8 @@ class TimerDisplay
 };
 
 const std::map<state,std::string> TimerDisplay::output_map = {
-    {state::reset, ">"},
-    {state::started, "="},
-    {state::stopped, ">"},
-    {state::time_set, ""}
+    {state::RESET, ">"},
+    {state::STARTED, "="},
+    {state::STOPPED, ">"},
+    {state::TIME_SET, ""}
 };

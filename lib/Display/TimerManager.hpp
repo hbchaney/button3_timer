@@ -26,7 +26,7 @@ class TimerManager
     void Update(Input new_input)
     { 
         //switch the timer if B long is called while the timer is not being set 
-        if (new_input == Input::B_long && timer_cycler[current_timer]->get_state() != state::time_set)
+        if (new_input == Input::B_long && timer_cycler[current_timer]->get_state() != state::TIME_SET)
         { 
             switch_state(); 
         }
@@ -67,7 +67,7 @@ class TimerManager
     void switch_state() 
     { 
         timer_display_cycler[current_timer]->set_unselected(); 
-        current_timer = (current_timer < 2) ? current_timer + 1 : 0; 
+        current_timer = (current_timer + 1) % 3; 
         timer_display_cycler[current_timer]->set_selected(); 
     }
 };

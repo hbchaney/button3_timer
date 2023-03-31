@@ -4,16 +4,17 @@
 #include <EEPROM.h>
 
 enum state { 
-    stopped, 
-    started,
-    reset,
-    time_set,
+    STOPPED, 
+    STARTED,
+    RESET,
+    TIME_SET,
+    FINISHED
 }; 
 
 enum setting { 
-        seconds, 
-        minutes, 
-    };
+        SECONDS, 
+        MINUTES, 
+};
 
 class Timer 
 { 
@@ -30,9 +31,9 @@ class Timer
 
     Input input_cache[2] {none,none}; 
 
-    state current_state = reset; 
+    state current_state = RESET; 
 
-    setting current_setting = seconds; 
+    setting current_setting = SECONDS; 
 
     short max_minutes = 60;
     short max_seconds = 60; 
@@ -54,6 +55,7 @@ class Timer
     void started_input();
     void reset_input(); 
     void time_set_input(); 
+    void finished_input(); 
     void check_input(); 
 
     public: 
